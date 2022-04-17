@@ -1,16 +1,12 @@
 package com.phantom.DAO;
 
 import com.phantom.entity.Manufacturer;
-import com.phantom.entity.Product;
 
 import java.sql.*;
 import java.util.HashSet;
-
 import java.util.Set;
 
-
-
-public class ProductDAOImpl implements ProductDAO {
+public class ManufacturerDAOImpl_JDBC implements ManufacturerDAO {
 
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres",
@@ -27,43 +23,46 @@ public class ProductDAOImpl implements ProductDAO {
         }
     }
     @Override
-    public Iterable<Product> findAll() {
-        Set<Product> products = new HashSet<>();
+    public Iterable<Manufacturer> findAll() {
+        Set<Manufacturer> manufacturers = new HashSet<>();
         Connection connection = null;
         try {
             connection = getConnection();
             PreparedStatement preparedStatement =
-                    connection.prepareStatement("SELECT * FROM product");
+                    connection.prepareStatement("SELECT * FROM manufacturer");
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()){
-                final Product product = Product.builder()
-                        .id(resultSet.getLong("id"))
-                        .title(resultSet.getString("title"))
-                        .cost(resultSet.getBigDecimal("cost"))
-                        .build();
-
-                products.add(product);
+                final Manufacturer manufacturer = Manufacturer.builder()
+                                .id(resultSet.getLong("id"))
+                                .name(resultSet.getString("name"))
+                                .build();
+                manufacturers.add(manufacturer);
             }
             preparedStatement.close();
         } catch (SQLException e) {
         }finally {
             closeConnection(connection);
         }
-        return products;
+        return manufacturers;
     }
 
     @Override
-    public Product findById(Long id) {
+    public String findNameById(Long id) {
         return null;
     }
 
     @Override
-    public void insert(Product product) {
+    public Manufacturer findById(Long id) {
+        return null;
+    }
+
+    @Override
+    public void insert(Manufacturer manufacturer) {
 
     }
 
     @Override
-    public void update(Product product) {
+    public void update(Manufacturer manufacturer) {
 
     }
 

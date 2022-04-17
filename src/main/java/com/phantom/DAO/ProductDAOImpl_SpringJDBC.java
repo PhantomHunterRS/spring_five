@@ -2,36 +2,30 @@ package com.phantom.DAO;
 
 import com.phantom.entity.Manufacturer;
 import com.phantom.entity.Product;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-import java.sql.*;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashSet;
-
 import java.util.Set;
 
+@Component
+@RequiredArgsConstructor
+public class ProductDAOImpl_SpringJDBC implements ProductDAO {
 
+    private final DataSource dataSource;
 
-public class ProductDAOImpl implements ProductDAO {
-
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres",
-                "geek","geek");
-    }
-    private void closeConnection(Connection connection){
-        if (connection == null){
-            return;
-        }
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
     @Override
     public Iterable<Product> findAll() {
         Set<Product> products = new HashSet<>();
         Connection connection = null;
         try {
-            connection = getConnection();
+            connection = dataSource.getConnection();
             PreparedStatement preparedStatement =
                     connection.prepareStatement("SELECT * FROM product");
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -40,14 +34,18 @@ public class ProductDAOImpl implements ProductDAO {
                         .id(resultSet.getLong("id"))
                         .title(resultSet.getString("title"))
                         .cost(resultSet.getBigDecimal("cost"))
+                        //.data(resultSet.getDate("manufacture_data"))
                         .build();
-
                 products.add(product);
             }
             preparedStatement.close();
         } catch (SQLException e) {
         }finally {
-            closeConnection(connection);
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return products;
     }

@@ -2,10 +2,10 @@ package com.phantom.DAO;
 
 import com.phantom.entity.Manufacturer;
 
-import java.util.Iterator;
 
 public interface ManufacturerDAO {
-    Iterator<Manufacturer> fildAll();
+    Iterable<Manufacturer> findAll();
+    String findNameById(Long id);
     Manufacturer findById(Long id);
     void insert(Manufacturer manufacturer);
     void update(Manufacturer manufacturer);
